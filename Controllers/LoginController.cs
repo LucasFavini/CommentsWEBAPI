@@ -1,8 +1,12 @@
-﻿using CommentsApp.Models;
+﻿using CommentsApp.context;
+using CommentsApp.Models;
+using CommentsApp.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using System.Web.Helpers;
 
 namespace CommentsApp.Controllers
 {
@@ -11,21 +15,30 @@ namespace CommentsApp.Controllers
     public class LoginController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        public LoginController(IConfiguration configuration)
+        private readonly ApplicationDbContext _repository;
+        private readonly IUsersRepository _usersRepository;
+
+        public LoginController(IConfiguration configuration, ApplicationDbContext repository, IUsersRepository usersRepository)
         {
             _configuration = configuration;
+            _repository = repository;
+            _usersRepository = usersRepository;
+
         }
 
         [HttpPost]
-        public IActionResult Post(Admin admin)
+        public IActionResult Post(Userlogin userInput)
         {
             //Podria hacerlo mejor:
             //Your logic for login process
             //If login username and password are correct then proceed to generate token
             string jwtValue = string.Empty;
             try
-            {
-                if (admin.Password == "admin" && admin.UserName == "admin")
+            {               
+                var currentUser = _repository.User.Where(x => x.UserName == userInput.UserName).FirstAsync().Result;
+                var userCheck = _usersRepository.CheckUser(currentUser?.Password);
+
+                if (userCheck)
                 {
                     var signingCredentials = new SigningCredentials(
                             new SymmetricSecurityKey(
@@ -40,12 +53,16 @@ namespace CommentsApp.Controllers
                                         signingCredentials: signingCredentials);
                     jwtValue = new JwtSecurityTokenHandler().WriteToken(jwtObject);
                 }
-                    return Ok(jwtValue);
+                else
+                {
+                    throw new Exception("User dont match");
+                }
+                    return Ok(new { Token = jwtValue, UserName = currentUser.UserName, id = currentUser.Id, isAdmin = currentUser.isAdminUser });
             }
             catch (Exception)
             {
 
-                return Unauthorized();
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
 

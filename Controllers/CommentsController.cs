@@ -52,7 +52,6 @@ namespace CommentsApp.Controllers
             }
         }
 
-
         [HttpPut("UpdateComment")]
         public async Task<IActionResult> UpdateComment(Comment comment)
         {
@@ -86,5 +85,45 @@ namespace CommentsApp.Controllers
                 return BadRequest("Error while was deleting a comment");
             }
         }
+
+        [HttpPost("AddSubComment")]
+        public async Task<IActionResult> AddSubComment(SubComment subComent)
+        {
+            try
+            {
+                _logger.LogInformation($"Start Adding a subComment");
+                if (ModelState.IsValid)
+                {
+                    await _commentsRepository.AddSubComment(subComent);
+                    return Ok(StatusCodes.Status204NoContent);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest("Error while was adding a comment");
+            }
+        }
+
+        [HttpDelete("DeleteSubComment")]
+        public async Task<IActionResult> DeleteSubComment(int commentId, string userName)
+        {
+            try
+            {
+                _logger.LogInformation($"Start Deleting a subComment");
+                await _commentsRepository.DeleteSubComment(commentId, userName);
+                return Ok(StatusCodes.Status204NoContent);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest("Error while was deleting a comment");
+            }
+        }
+
     }
 }

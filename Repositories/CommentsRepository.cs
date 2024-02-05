@@ -28,6 +28,12 @@ namespace CommentsApp.Repositories
             await _repository.SaveChangesAsync();
         }
 
+        public async Task AddSubComment(SubComment subComment)
+        {
+            await _repository.SubComment.AddAsync(subComment);
+            await _repository.SaveChangesAsync();
+        }
+
         public async Task UpdateComment(Comment comment)
         {
             var user = _repository.User.Where(user => user.Id == comment.UserId).Select(x => x.Id).FirstOrDefaultAsync().Result;
@@ -47,17 +53,27 @@ namespace CommentsApp.Repositories
 
         public async Task DeleteComment(int userId, int commentId)
         {
+
             var user = _repository.User.Where(user => user.Id == userId).FirstOrDefaultAsync().Result;
             if (user != null)
             {
-                var comments = await GetUserAndComment();                
-                var commentToDelete = comments.Where(x => x.Id == commentId).FirstOrDefault();
-                if (commentToDelete != null && (user.Id == commentToDelete.UserId || user.isAdminUser))
                 {
-                    _repository.Comment.Remove(commentToDelete);
-                    await _repository.SaveChangesAsync();
+                    var comments = await GetUserAndComment();
+                    var commentToDelete = comments.Where(x => x.Id == commentId).FirstOrDefault();
+                    if (commentToDelete != null && (user.Id == commentToDelete.UserId || user.isAdminUser))
+                    {
+                        _repository.Comment.Remove(commentToDelete);
+                        await _repository.SaveChangesAsync();
+                    }
                 }
             }
+        }
+
+        public async Task DeleteSubComment(int commentId, string userName)
+        {
+            var subComment = _repository.SubComment.Where(x => x.CommentId == commentId && x.UserName == userName).FirstOrDefault();
+            _repository.SubComment.Remove(subComment);
+            await _repository.SaveChangesAsync();
         }
 
         private async Task<List<Comment>> GetUserAndComment()
@@ -75,6 +91,5 @@ namespace CommentsApp.Repositories
                         CommentValue = comment.CommentValue
                     }).ToListAsync();
         }
-
     }
 }

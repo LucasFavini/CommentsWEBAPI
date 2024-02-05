@@ -4,6 +4,7 @@ using CommentsApp.context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CommentsApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240131183824_subComments2")]
+    partial class subComments2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,7 +48,7 @@ namespace CommentsApp.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("CommentsApp.Entities.SubComment", b =>
+            modelBuilder.Entity("CommentsApp.Entities.SubComments", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -63,14 +65,11 @@ namespace CommentsApp.Migrations
                     b.Property<string>("CommentValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CommentId");
 
-                    b.ToTable("SubComments");
+                    b.ToTable("SubComment");
                 });
 
             modelBuilder.Entity("CommentsApp.Entities.User", b =>
@@ -107,7 +106,7 @@ namespace CommentsApp.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CommentsApp.Entities.SubComment", b =>
+            modelBuilder.Entity("CommentsApp.Entities.SubComments", b =>
                 {
                     b.HasOne("CommentsApp.Entities.Comment", null)
                         .WithMany("SubComments")

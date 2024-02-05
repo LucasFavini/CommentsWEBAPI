@@ -2,7 +2,7 @@
 
 namespace CommentsApp.Models
 {
-    public class Admin
+    public class Userlogin
     {
         [Required]
         public string? UserName { get; set; }

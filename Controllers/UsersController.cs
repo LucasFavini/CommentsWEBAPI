@@ -19,12 +19,28 @@ namespace CommentsApp.Controllers
             _logger = logger;
         }
 
-        [HttpGet("GetUserAndComments")]
-        public async Task<IActionResult> GetUserAndComments(int userId)
+        [HttpGet("GetUsersAndComments")]
+        public async Task<IActionResult> GetUsersAndComments()
         {
             try
             {
-               var result = await _usersRepository.GetUserComments(userId);
+                var result = await _usersRepository.GetUserComment();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest("Error getting values");
+            }
+        }
+
+
+        [HttpGet("GetUserAndCommentsByID")]
+        public async Task<IActionResult> GetUserAndCommentsByID(int userId)
+        {
+            try
+            {
+               var result = await _usersRepository.GetUserCommentsByID(userId);
                return Ok(result);
             }
             catch (Exception ex)

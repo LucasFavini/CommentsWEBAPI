@@ -69,7 +69,10 @@ builder.Services.AddAuthorization();
 //AUTOMAPPER
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 //CORS
-builder.Services.AddCors();
+builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+{
+    builder.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader();
+}));
 //SQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
@@ -79,9 +82,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<ICommentsRepository, CommentsRepository>();
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 
-
-
 var app = builder.Build();
+
+app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("corsapp");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -95,5 +100,6 @@ app.UseAuthorization();
 
 app.UseHttpsRedirection();
 app.MapControllers();
+
 
 app.Run();

@@ -2,14 +2,13 @@
 
 namespace CommentsApp.Entities
 {
-    [Table("Comments")]
-    public class Comment
+    [Table("SubComments")]
+    public class SubComment
     {
         public int Id { get; set; }
-        public int UserId { get; set; }
+        public int CommentId { get; set; }
+        public string? UserName { get; set; }
         public string? CommentValue { get; set; }
         public DateTime CommentDateTime { get; set; }
-        public ICollection<SubComment>? SubComments { get; set; } = new List<SubComment>();
-
     }
 }
