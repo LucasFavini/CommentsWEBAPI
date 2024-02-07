@@ -49,8 +49,10 @@ namespace CommentsApp.Controllers
                     var jwtObject = new JwtSecurityToken(
                                     issuer: _configuration["JWT:Issuer"],
                                         audience: _configuration["JWT:Audience"],
-                                        expires: DateTime.Now.AddSeconds(300),
+                                        expires: DateTime.Now.AddMinutes(10),
                                         signingCredentials: signingCredentials);
+
+                    //Issue with the UTCdateTime so the validation is not taking in consideration the expires prop
                     jwtValue = new JwtSecurityTokenHandler().WriteToken(jwtObject);
                 }
                 else
