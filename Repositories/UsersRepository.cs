@@ -79,11 +79,9 @@ namespace CommentsApp.Repositories
             //TODO: Agregar notificacion para que sepa que ya existe ese userName
         }
 
-        public bool CheckUser(string? userPassword)
+        public bool CheckUser(string? userPassword, string? inputPassword)
         {
-            var hash = Crypto.HashPassword(userPassword);
-            var verified = Crypto.VerifyHashedPassword(hash, userPassword);
-
+            var verified = Crypto.VerifyHashedPassword(userPassword, inputPassword);
             return verified;
         }
 

@@ -36,29 +36,32 @@ namespace CommentsApp.Controllers
             try
             {               
                 var currentUser = _repository.User.Where(x => x.UserName == userInput.UserName).FirstAsync().Result;
-                var userCheck = _usersRepository.CheckUser(currentUser?.Password);
-
-                if (userCheck)
+                if (currentUser != null)
                 {
-                    var signingCredentials = new SigningCredentials(
-                            new SymmetricSecurityKey(
-                                        Encoding.UTF8.GetBytes(
-                                            _configuration["JWT:SigningKey"])),
-                                    SecurityAlgorithms.HmacSha256);
+                var userCheck = _usersRepository.CheckUser(currentUser?.Password, userInput.Password);
+                    if (userCheck)
+                    {
+                        var signingCredentials = new SigningCredentials(
+                                new SymmetricSecurityKey(
+                                            Encoding.UTF8.GetBytes(
+                                                _configuration["JWT:SigningKey"])),
+                                        SecurityAlgorithms.HmacSha256);
 
-                    var jwtObject = new JwtSecurityToken(
-                                    issuer: _configuration["JWT:Issuer"],
-                                        audience: _configuration["JWT:Audience"],
-                                        expires: DateTime.Now.AddMinutes(10),
-                                        signingCredentials: signingCredentials);
+                        var jwtObject = new JwtSecurityToken(
+                                        issuer: _configuration["JWT:Issuer"],
+                                            audience: _configuration["JWT:Audience"],
+                                            expires: DateTime.Now.AddMinutes(10),
+                                            signingCredentials: signingCredentials);
 
-                    //Issue with the UTCdateTime so the validation is not taking in consideration the expires prop
-                    jwtValue = new JwtSecurityTokenHandler().WriteToken(jwtObject);
+                        //Issue with the UTCdateTime so the validation is not taking in consideration the expires prop
+                        jwtValue = new JwtSecurityTokenHandler().WriteToken(jwtObject);
+                    }
+                    else
+                    {
+                        throw new Exception("User dont match");
+                    }
                 }
-                else
-                {
-                    throw new Exception("User dont match");
-                }
+
                     return Ok(new { Token = jwtValue, UserName = currentUser.UserName, id = currentUser.Id, isAdmin = currentUser.isAdminUser });
             }
             catch (Exception)
