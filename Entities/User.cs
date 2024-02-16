@@ -15,7 +15,6 @@ namespace CommentsApp.Entities
         public string? UserName { get; set; }
         public string? Password { get; set; }
         public DateTime UserCreation { get; set; }
-        [JsonIgnore]
         public bool isAdminUser { get; set; }
         [JsonIgnore]
         public ICollection<Comment>? Comments { get; set; } = new List<Comment>();
